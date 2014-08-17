@@ -1,0 +1,5 @@
+name = Custom Form Code
+description = User can create form by ui and then download its code.
+core = 7.x
+package = User interface
+configure = admin/config/user-interface/custom_form_code

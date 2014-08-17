@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * custom_form_code_maker module file.
+ */
+
+/**
+ * Implements hook_permission().
+ */
+function custom_form_code_permission() {
+
+  return array(
+    'custom_form_code_maker' => array(
+      'title' => t('Custom Form Code Maker'),
+      'description' => t('Warning: Give to trusted roles only; this permission has security implications.'),
+    ),
+  );
+
+}
+
+/**
+ * Implements hook_menu.
+ */
+function custom_form_code_maker_menu() {
+
+  $items['admin/config/user-interface/custom_form_code_maker'] = array(
+    'title' => 'Custom Form Code Maker',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'file' => 'custom_form_code_maker.admin.inc',
+    'page arguments' => array('custom_form_code_maker'),
+    'access arguments' => array('custom_form_code_maker'),
+  );
+
+  return $items;
+}
