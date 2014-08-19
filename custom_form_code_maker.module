@@ -27,9 +27,8 @@ function custom_form_code_maker_menu() {
   $items['admin/config/user-interface/custom_form_code_maker'] = array(
     'title' => 'Custom Form Code Maker',
     'description' => '',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'custom_form_code_maker',
     'file' => 'custom_form_code_maker.admin.inc',
-    'page arguments' => array('custom_form_code_maker'),
     'access arguments' => array('custom_form_code_maker'),
   );
 
