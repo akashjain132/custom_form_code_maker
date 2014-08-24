@@ -4,3 +4,20 @@
  * @file
  * Install and uninstall functions for set some default value.
  */
+
+/**
+ * Implements hook_install().
+ */
+function custom_form_code_maker_install() {
+  $form_element_type_name = array('0' => 'Textfield', '1' => 'Textarea', '2' => 'Radio', '3' => 'Radios', '4' => 'Checkbox', '5' => 'Checkboxes');
+
+  variable_set('form_element_type_name', $form_element_type_name);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function custom_form_code_maker_uninstall() {
+  // Delete variables.
+  variable_del('form_element_type_name');
+}

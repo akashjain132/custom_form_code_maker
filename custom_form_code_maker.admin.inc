@@ -14,6 +14,8 @@ function custom_form_code_maker() {
 
 function get_form_name_and_field($form, &$form_state) {
 
+  $form['#tree'] = TRUE;
+
   $form['form_name'] = array(
   	'#type' => 'textfield',
   	'#title' => t('Form Name'),
@@ -32,11 +34,41 @@ function get_form_name_and_field($form, &$form_state) {
   	'#title' => t('Number of form Element'),
   	'#required' => TRUE,
   	'#access' => TRUE,
-  	'#options' => range(1,10),
+  	'#options' => array_slice(range(0,10), 1, NULL, TRUE),
   	'#attributes' => array(
   		'class' => array('number_of_form_element'),
   	),
+    '#ajax' => array(
+      'event' => 'change',
+      'callback' => 'show_form_elements',
+      'wrapper' => 'chose-form-elements',
+    ),
   );
+
+  /* Ajax wrapper to show form element type name*/
+  $form['chose_form_elements'] = array(
+    '#type' => 'container',
+    '#attributes' => array('id' => 'chose-form-elements'),
+  );
+
+  if (isset($form_state['values']['number_of_form_element'])) {
+
+    $number_of_elements     = $form_state['values']['number_of_form_element'];
+    $form_element_type_name = variable_get('form_element_type_name', array());
+
+    for ($i = 1; $i <= $number_of_elements; $i++) {
+      $form['chose_form_elements']['form_type_name_' . $i] = array(
+        '#type' => 'select',
+        '#required' => 'true',
+        '#access' => TRUE,
+        '#options' => $form_element_type_name,
+        '#attributes' => array(
+          'class' => array('form-type-name-list'),
+        ),
+      );
+    }
+
+  }
 
   $form['submit'] = array(
   	'#type' => 'submit',
@@ -48,6 +80,10 @@ function get_form_name_and_field($form, &$form_state) {
   );
 
   return $form;
+}
+
+function show_form_elements($form, &$form_state) {
+  return $form['chose_form_elements'];
 }
 
 function validate_form_function_name($element, &$form_state) {
@@ -67,7 +103,6 @@ function get_form_name_and_field_submit($form, &$form_state) {
   $custom_form_code  .= function_start_comment();
 	$custom_form_code  .= function_name($form_function_name);
 	$custom_form_code  .= function_closing_braces();
-	dpm($custom_form_code);
 }
 
 function function_start_comment() {
