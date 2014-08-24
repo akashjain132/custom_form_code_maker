@@ -9,7 +9,7 @@
  * Implements hook_install().
  */
 function custom_form_code_maker_install() {
-  $form_element_type_name = array('0' => 'Textfield', '1' => 'Textarea', '2' => 'Radio', '3' => 'Radios', '4' => 'Checkbox', '5' => 'Checkboxes', '6' => 'date', '7' => 'fieldset', '8' => 'file', '9' => 'managed file', '10' => 'select', '11' => 'button', '12' => 'container', '13' => 'submit', '14' => 'hidden', '15' => 'markup');
+  $form_element_type_name = array('0' => 'textfield', '1' => 'textarea', '2' => 'radio', '3' => 'radios', '4' => 'checkbox', '5' => 'checkboxes', '6' => 'date', '7' => 'fieldset', '8' => 'file', '9' => 'managed file', '10' => 'select', '11' => 'button', '12' => 'container', '13' => 'submit', '14' => 'hidden', '15' => 'markup');
 
   variable_set('form_element_type_name', $form_element_type_name);
 }
