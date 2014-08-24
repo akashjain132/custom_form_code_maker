@@ -103,6 +103,9 @@ function get_form_name_and_field($form, &$form_state) {
         case 4:
           create_checkbox_form($form, $form_state);
           break;
+        case 10:
+          create_select_form($form, $form_state);
+          break;
         default:
           break;
       }
@@ -162,6 +165,31 @@ function create_checkbox_form(&$form, &$form_state) {
 
 }
 
+function create_select_form(&$form, $form_state) {
+  for ($i = 1; $i <=10; $i++) {
+    $fieldset_element_name = 'select_element_fieldset_' . $i;
+    if (isset($form[$fieldset_element_name])) {
+      continue;
+    }
+    $form[$fieldset_element_name] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Select'),
+      '#access' => TRUE,
+    );
+    break;
+  }
+
+  $form[$fieldset_element_name]['select_element_name']        = form_element_name_field();
+  $form[$fieldset_element_name]['select_element_title']       = form_title_field();
+  $form[$fieldset_element_name]['select_element_access']      = form_access_field();
+  $form[$fieldset_element_name]['select_element_required']    = form_required_field();
+  $form[$fieldset_element_name]['select_element_disabled']    = form_disable_field();
+  $form[$fieldset_element_name]['select_element_option']      = form_option_field();
+  $form[$fieldset_element_name]['select_element_description'] = form_description_field();
+  $form[$fieldset_element_name]['select_element_validate']    = form_element_validate_field();
+
+}
+
 function form_required_field() {
 
   $required_field = array(
@@ -188,7 +216,7 @@ function form_access_field() {
 
   $access_field = array(
     '#type' => 'checkbox',
-    '#title' => t('Disabled'),
+    '#title' => t('Access'),
     '#access' => TRUE,
   );
 
@@ -204,6 +232,20 @@ function form_description_field() {
   );
 
   return $description_field;
+}
+
+function form_option_field() {
+
+  $option_field = array(
+    '#type' => 'textarea',
+    '#title' => t('Allowed values list'),
+    '#description' => t('The possible values this field can contain. Enter one value per line, in the format key|label.<br/>
+      The key is the stored value. The label will be used in displayed values and edit forms.<br/>
+      The label is optional: if a line contains a single string, it will be used as key and label.'),
+    '#access' => TRUE,
+  );
+
+  return $option_field;
 }
 
 function form_element_validate_field() {
@@ -243,10 +285,13 @@ function form_element_name_field() {
 }
 
 function get_form_name_and_field_submit($form, &$form_state) {
+  dpm($form_state);
 	$form_function_name = $form_state['values']['form_name'];
+  $param = array('$form', '&$form_state');
   $custom_form_code   = '';
   $custom_form_code  .= function_start_comment();
-	$custom_form_code  .= function_name($form_function_name);
+	$custom_form_code  .= function_name($form_function_name, $param);
+  $custom_form_code  .= generate_form_code($form, $form_state);
 	$custom_form_code  .= function_closing_braces();
 }
 
@@ -256,10 +301,22 @@ function function_start_comment() {
   return $function_start_comment;
 }
 
-function function_name($form_function_name) {
-  $function_name = "function {$form_function_name}(\$form, \$form_state) {";
+function function_name($form_function_name, $param = array()) {
+  $function_name = "function {$form_function_name} (";
+  foreach ($param as $key => $value) {
+    $function_name .= $value . ', '; 
+  }
+  $function_name  = rtrim($function_name, ", ");
+  $function_name .= ')';
+  $function_name .= function_opening_braces();
 
   return $function_name;
+}
+
+function function_opening_braces() {
+  $function_opening_braces = " {\n";
+
+  return $function_opening_braces;
 }
 
 function function_closing_braces() {
@@ -267,3 +324,96 @@ function function_closing_braces() {
 
   return $function_closing_braces;
 }
+
+function field_frame_start_code($field_name) {
+
+  return "\$form['$field_name'] = array(\n";
+}
+
+function field_frame_end_code() {
+
+  return ");\n";
+}
+
+function field_type_code($field_type) {
+
+  return "'#type' => '$field_type',\n";
+}
+
+function field_title_code($title_name) {
+
+  return "'#title' => t('$title_name'),\n";
+}
+
+function field_access_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#access' => $boolean,\n";
+}
+
+function field_required_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#required' => $boolean,\n";
+}
+
+function field_disabled_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#disabled' => $boolean,\n";
+}
+
+function field_description_code($description) {
+
+  return "'#description' => t('$description'),\n";
+}
+
+function field_element_validate_code($element_validate_function_name) {
+
+  return "'#element_validate' => array('$element_validate_function_name'),\n";
+}
+
+function set_boolean_value($boolean) {
+  $boolean = $boolean == 1 ? 'TRUE' : 'FALSE';
+  return $boolean;
+}
+
+function element_validate_function_code($element_validate_function_name) {
+  $param = array('$element', '&$form_state');
+  $function_frame  = function_name($element_validate_function_name, $param);
+  $function_frame .= function_closing_braces();
+  return $function_frame;
+}
+
+function generate_form_code($form, $form_state) {
+  $custom_code = "";
+  $fieldset_name = "checkbox_element_fieldset";
+  $form_type_name = str_replace("_element_fieldset", "", $fieldset_name);
+  $chose_form_elements = $form_state['values']['chose_form_elements'];
+  for ($i = 1; $i <= 10; $i++) {
+    $fieldset_element_name = $fieldset_name . '_' . $i;
+    if (isset($form_state['values'][$fieldset_element_name])) {
+      $field_info     = $form_state['values'][$fieldset_element_name];
+      $form_base_name = str_replace("_fieldset", "", $fieldset_name);
+      $custom_code   .= code_maker($field_info, $form_base_name, $form_type_name);
+    }
+  }
+
+  return $custom_code;
+}
+
+function code_maker($field_info, $form_base_name, $form_type_name) {
+  $custom_code  = "";
+  $custom_code .= isset($field_info[$form_base_name . '_name']) ? field_frame_start_code($field_info[$form_base_name . '_name']) : "";
+  $custom_code .= field_type_code($form_type_name);
+  $custom_code .= isset($field_info[$form_base_name . '_title']) ? field_title_code($field_info[$form_base_name . '_title']) : "";
+  $custom_code .= isset($field_info[$form_base_name . '_access']) ? field_access_code($field_info[$form_base_name . '_access']) : "";
+  $custom_code .= isset($field_info[$form_base_name . '_required']) ? field_required_code($field_info[$form_base_name . '_required']) : "";
+  $custom_code .= isset($field_info[$form_base_name . '_disabled']) ? field_disabled_code($field_info[$form_base_name . '_disabled']) : "";
+  $custom_code .= isset($field_info[$form_base_name . '_description']) ? field_description_code($field_info[$form_base_name . '_description']) : "";
+  $custom_code .= isset($field_info[$form_base_name . '_validate']) ? field_element_validate_code($field_info[$form_base_name . '_validate']) : "";
+  $custom_code .= field_frame_end_code();
+  dpm($custom_code);
+  return $custom_code;
+}
+
