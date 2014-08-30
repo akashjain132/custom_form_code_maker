@@ -51,6 +51,23 @@ function field_disabled_code($boolean) {
   return "'#disabled' => $boolean,\n";
 }
 
+/* Print code for form element allowed value */
+function field_allowed_value_code($string) {
+
+  $option = list_extract_allowed_values($string, 'list_text', TRUE);
+  $string = array_to_string($option);
+  return "'#options' => array($string),\n";
+}
+
+function array_to_string($list, $string = '') {
+  foreach ($list as $key => $value) {
+    $string .= "'$key' => t('" . check_plain($value) . "'), ";
+  }
+  $string = rtrim($string, ', ');
+
+  return $string;
+}
+
 /* Print code for form element discription */
 function field_description_code($description) {
 
@@ -153,18 +170,19 @@ function form_description_field() {
   return $description_field;
 }
 
-function form_option_field() {
+function form_allowed_value_field() {
 
-  $option_field = array(
+  $element_allowed_value_field = array(
     '#type' => 'textarea',
     '#title' => t('Allowed values list'),
-    '#description' => t('The possible values this field can contain. Enter one value per line, in the format key|label.<br/>
-      The key is the stored value. The label will be used in displayed values and edit forms.<br/>
-      The label is optional: if a line contains a single string, it will be used as key and label.'),
+    '#description' => t('The possible values this field can contain. Enter one value per line, in the format key|label.
+                         The key is the stored value. The label will be used in displayed values and edit forms.
+                         The label is optional: if a line contains a single string, it will be used as key and label.'),
+    '#element_validate' => array('list_allowed_values_setting_validate'),
     '#access' => TRUE,
   );
 
-  return $option_field;
+  return $element_allowed_value_field;
 }
 
 function form_element_validate_field() {

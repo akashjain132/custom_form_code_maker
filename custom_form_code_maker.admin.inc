@@ -174,6 +174,9 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
   if (in_array('element_validate', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_validate']    = form_element_validate_field();
   }
+  if (in_array('allowed_value', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_allowed_value']    = form_allowed_value_field();
+  }
 
 }
 
@@ -225,6 +228,7 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable(($field_info[$form_base_name . '_access'])) ? field_access_code($field_info[$form_base_name . '_access']) : "";
   $custom_code .= (check_variable($field_info[$form_base_name . '_required'])) ? field_required_code($field_info[$form_base_name . '_required']) : "";
   $custom_code .= (check_variable($field_info[$form_base_name . '_disabled'])) ? field_disabled_code($field_info[$form_base_name . '_disabled']) : "";
+  $custom_code .= check_variable(($field_info[$form_base_name . '_allowed_value'])) ? field_allowed_value_code($field_info[$form_base_name . '_allowed_value']) : "";
   $custom_code .= (check_variable($field_info[$form_base_name . '_description'])) ? field_description_code($field_info[$form_base_name . '_description']) : "";
   $custom_code .= (check_variable($field_info[$form_base_name . '_validate'])) ? field_element_validate_code($field_info[$form_base_name . '_validate']) : "";
   $custom_code .= field_frame_end_code();
@@ -247,6 +251,7 @@ function show_form_field($field_type) {
     'placeholder'      => 'placeholder',
     'description'      => 'description',
     'element_validate' => 'element_validate',
+    'allowed_value'    => 'allowed_value',
   );
 
   switch ($field_type) {
@@ -271,6 +276,7 @@ function show_form_field($field_type) {
         $field_name['placeholder'],
         $field_name['description'],
         $field_name['element_validate'],
+        $field_name['allowed_value'],
       );
       break;
 
