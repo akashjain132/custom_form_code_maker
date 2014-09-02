@@ -51,6 +51,30 @@ function field_disabled_code($boolean) {
   return "'#disabled' => $boolean,\n";
 }
 
+/* Print code for form element default value */
+function field_default_value_code($default_value) {
+
+  return "'#default_value' => t('$default_value'),\n";
+}
+
+/* Print code for form element rows */
+function field_rows_value_code($row_value) {
+
+  return "'#rows' => $row_value,\n";
+}
+
+/* Print code for form element size */
+function field_size_value_code($size_value) {
+
+  return "'#size' => $size_value,\n";
+}
+
+/* Print code for form element weight */
+function field_weight_code($weight) {
+
+  return "'#weight' => $weight,\n";
+}
+
 /* Print code for form element allowed value */
 function field_allowed_value_code($string) {
 
@@ -109,7 +133,6 @@ function form_title_field() {
   $title_field = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-    '#access' => TRUE,
   );
 
   return $title_field;
@@ -120,7 +143,6 @@ function form_placeholder_field() {
   $title_field = array(
     '#type' => 'textfield',
     '#title' => t('Placeholder'),
-    '#access' => TRUE,
   );
 
   return $title_field;
@@ -131,7 +153,6 @@ function form_required_field() {
   $required_field = array(
     '#type' => 'checkbox',
     '#title' => t('Required'),
-    '#access' => TRUE,
   );
 
   return $required_field;
@@ -142,7 +163,6 @@ function form_disable_field() {
   $disable_field = array(
     '#type' => 'checkbox',
     '#title' => t('Disabled'),
-    '#access' => TRUE,
   );
 
   return $disable_field;
@@ -153,10 +173,55 @@ function form_access_field() {
   $access_field = array(
     '#type' => 'checkbox',
     '#title' => t('Access'),
-    '#access' => TRUE,
   );
 
   return $access_field;
+}
+
+function form_default_value_field() {
+
+  $description_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Default Value'),
+  );
+
+  return $description_field;
+}
+
+function form_rows_value_field() {
+
+  $rows_field = array(
+    '#type' => 'textfield',
+    '#title' => t('#Rows'),
+    '#size' => 4,
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  return $rows_field;
+}
+
+function form_size_value_field() {
+
+  $size_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Size'),
+    '#size' => 4,
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  return $size_field;
+}
+
+function form_weight_field() {
+
+  $weight_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Weight'),
+    '#size' => 4,
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  return $weight_field;
 }
 
 function form_description_field() {
@@ -164,7 +229,6 @@ function form_description_field() {
   $description_field = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
-    '#access' => TRUE,
   );
 
   return $description_field;
@@ -178,8 +242,7 @@ function form_allowed_value_field() {
     '#description' => t('The possible values this field can contain. Enter one value per line, in the format key|label.
                          The key is the stored value. The label will be used in displayed values and edit forms.
                          The label is optional: if a line contains a single string, it will be used as key and label.'),
-    '#element_validate' => array('list_allowed_values_setting_validate'),
-    '#access' => TRUE,
+    '#required' => TRUE,
   );
 
   return $element_allowed_value_field;
@@ -191,7 +254,6 @@ function form_element_validate_field() {
     '#type' => 'textfield',
     '#title' => t('Element Validate'),
     '#description' => t('Enter function name which have code to validate element.'),
-    '#access' => TRUE,
     '#element_validate' => array('validate_form_function_name'),
   );
 
@@ -203,7 +265,6 @@ function form_element_name_field() {
   $element_name_field = array(
     '#type' => 'textfield',
     '#title' => t('Element Name'),
-    '#access' => TRUE,
     '#required' => TRUE,
   );
 
