@@ -174,6 +174,21 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
   if (in_array('default_value', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_default_value'] = form_default_value_field();
   }
+  if (in_array('value', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_value'] = form_value_field();
+  }
+  if (in_array('title_display', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_title_display'] = form_title_display_field($form_element_type);
+  }
+  if (in_array('resizable', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_resizable'] = form_element_resizable_field();
+  }
+  if (in_array('collapsed', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_collapsed'] = form_element_fieldset_collapsed_field($form_element_type);
+  }
+  if (in_array('collapsible', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_collapsible'] = form_element_fieldset_collapsible_field($form_element_type);
+  }
   if (in_array('size', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_size'] = form_size_value_field();
   }
@@ -245,6 +260,11 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable($field_info, $form_base_name . '_required') ? field_required_code($field_info[$form_base_name . '_required']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_disabled') ? field_disabled_code($field_info[$form_base_name . '_disabled']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_default_value') ? field_default_value_code($field_info[$form_base_name . '_default_value']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_value') ? field_value_code($field_info[$form_base_name . '_value']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_title_display') ? field_title_display_code($field_info[$form_base_name . '_title_display']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_resizable') ? field_resizable_code($field_info[$form_base_name . '_resizable']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_collapsed') ? field_fieldset_collapsed_code($field_info[$form_base_name . '_collapsed']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_collapsible') ? field_fieldset_collapsible_code($field_info[$form_base_name . '_collapsible']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_size') ? field_size_value_code($field_info[$form_base_name . '_size']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_rows') ? field_rows_value_code($field_info[$form_base_name . '_rows']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_weight') ? field_weight_code($field_info[$form_base_name . '_weight']) : "";
@@ -267,30 +287,40 @@ function show_form_field($field_type) {
     'title'            => 'title',
     'size'             => 'size',
     'rows'             => 'rows',
+    'value'            => 'value',
     'weight'           => 'weight',
     'access'           => 'access',
     'disabled'         => 'disabled',
     'required'         => 'required',
-    'placeholder'      => 'placeholder',
+    'resizable'        => 'resizable',
+    'collapsed'        => 'collapsed',
+    'collapsible'      => 'collapsible',
     'description'      => 'description',
-    'element_validate' => 'element_validate',
+    'placeholder'      => 'placeholder',
+    'title_display'    => 'title_display',
     'allowed_value'    => 'allowed_value',
     'default_value'    => 'default_value',
+    'element_validate' => 'element_validate',
   );
 
   switch ($field_type) {
     case 'checkbox':
       $show_field = array(
+        $field_name['size'],
+        $field_name['rows'],
+        $field_name['value'],
         $field_name['title'],
+        $field_name['weight'],
         $field_name['access'],
         $field_name['disabled'],
         $field_name['required'],
-        $field_name['size'],
-        $field_name['rows'],
-        $field_name['weight'],
+        $field_name['resizable'],
+        $field_name['collapsed'],
+        $field_name['collapsible'],
         $field_name['placeholder'],
         $field_name['description'],
         $field_name['default_value'],
+        $field_name['title_display'],
         $field_name['element_validate'],
       );
       break;

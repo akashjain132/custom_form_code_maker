@@ -57,6 +57,18 @@ function field_default_value_code($default_value) {
   return "'#default_value' => t('$default_value'),\n";
 }
 
+/* Print code for form element value */
+function field_value_code($value) {
+
+  return "'#value' => t('$value'),\n";
+}
+
+/* Print code for form element default value */
+function field_title_display_code($string) {
+
+  return "'#title_display' => '$string',\n";
+}
+
 /* Print code for form element rows */
 function field_rows_value_code($row_value) {
 
@@ -80,7 +92,28 @@ function field_allowed_value_code($string) {
 
   $option = list_extract_allowed_values($string, 'list_text', TRUE);
   $string = array_to_string($option);
-  return "'#options' => array($string),\n";
+  return "'#options' => $string,\n";
+}
+
+/* Print code for form element fieldset collapsed */
+function field_fieldset_collapsed_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#collapsed' => $boolean,\n";
+}
+
+/* Print code for form element fieldset collapsible */
+function field_fieldset_collapsible_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#collapsible' => $boolean,\n";
+}
+
+/* Print code for form element resizeable */
+function field_resizable_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#resizable' => $boolean,\n";
 }
 
 function array_to_string($list, $string = '') {
@@ -88,7 +121,7 @@ function array_to_string($list, $string = '') {
     $string .= "'$key' => t('" . check_plain($value) . "'), ";
   }
   $string = rtrim($string, ', ');
-
+  $string = "array($string)";
   return $string;
 }
 
@@ -127,6 +160,10 @@ function set_boolean_value($boolean) {
 
   return $boolean == 1 ? 'TRUE' : 'FALSE';
 }
+
+/**
+* Form element code.
+*/
 
 function form_title_field() {
 
@@ -186,6 +223,34 @@ function form_default_value_field() {
   );
 
   return $description_field;
+}
+
+function form_value_field() {
+
+  $value_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Value'),
+  );
+
+  return $value_field;
+}
+
+function form_title_display_field($field_type) {
+
+  if ($field_type == "radios" || $field_type == "checkboxes") {
+    $options = array('before' => t('Before'), 'after' => t('After'), 'invisible' => t('Invisible'), 'attribute' => t('Attribute'));
+  }
+  else {
+    $options = array('before' => t('Before'), 'after' => t('After'), 'invisible' => t('Invisible'));
+  }
+
+  $title_display_field = array(
+    '#type' => 'radios',
+    '#title' => t('Title Display'),
+    '#options' => $options,
+  );
+
+  return $title_display_field;
 }
 
 function form_rows_value_field() {
@@ -269,6 +334,37 @@ function form_element_name_field() {
   );
 
   return $element_name_field;
+}
+
+function form_element_resizable_field() {
+
+  $element_resizable_field = array(
+    '#type' => 'checkbox',
+    '#title' => t('Resizable'),
+  );
+
+  return $element_resizable_field;
+}
+
+
+function form_element_fieldset_collapsed_field() {
+
+  $element_fieldset_collapsed_field = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collapsed'),
+  );
+
+  return $element_fieldset_collapsed_field;
+}
+
+function form_element_fieldset_collapsible_field() {
+
+  $element_fieldset_collapsible_field = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collapsible'),
+  );
+
+  return $element_fieldset_collapsible_field;
 }
 
 /* Print code for function name */
