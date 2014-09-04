@@ -189,6 +189,9 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
   if (in_array('collapsible', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_collapsible'] = form_element_fieldset_collapsible_field($form_element_type);
   }
+  if (in_array('multiple', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_multiple'] = form_multiple_field();
+  }
   if (in_array('size', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_size'] = form_size_value_field();
   }
@@ -268,6 +271,7 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable($field_info, $form_base_name . '_resizable') ? field_resizable_code($field_info[$form_base_name . '_resizable']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_collapsed') ? field_fieldset_collapsed_code($field_info[$form_base_name . '_collapsed']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_collapsible') ? field_fieldset_collapsible_code($field_info[$form_base_name . '_collapsible']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_multiple') ? field_multiple_code($field_info[$form_base_name . '_multiple']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_size') ? field_size_value_code($field_info[$form_base_name . '_size']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_rows') ? field_rows_value_code($field_info[$form_base_name . '_rows']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_weight') ? field_weight_code($field_info[$form_base_name . '_weight']) : "";
@@ -298,6 +302,7 @@ function show_form_field($field_type) {
     'required'         => 'required',
     'resizable'        => 'resizable',
     'maxlength'        => 'maxlength',
+    'multiple'         => 'multiple',
     'collapsed'        => 'collapsed',
     'collapsible'      => 'collapsible',
     'description'      => 'description',
@@ -319,6 +324,7 @@ function show_form_field($field_type) {
         $field_name['access'],
         $field_name['disabled'],
         $field_name['required'],
+        $field_name['multiple'],
         $field_name['maxlength'],
         $field_name['resizable'],
         $field_name['collapsed'],

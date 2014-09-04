@@ -109,9 +109,17 @@ function field_fieldset_collapsible_code($boolean) {
   return "'#collapsible' => $boolean,\n";
 }
 
+/* Print code for form element maxlength */
 function field_maxlength_code($value) {
 
   return "'#maxlength' => $value,\n";
+}
+
+/* Print code for form element multiple */
+function field_multiple_code($boolean) {
+
+  $boolean = set_boolean_value($boolean);
+  return "'#multiple' => $boolean,\n";
 }
 
 /* Print code for form element resizeable */
@@ -242,11 +250,10 @@ function form_value_field() {
 
 function form_title_display_field($field_type) {
 
+  $options = array('before' => t('Before'), 'after' => t('After'), 'invisible' => t('Invisible'));
+
   if ($field_type == "radios" || $field_type == "checkboxes") {
-    $options = array('before' => t('Before'), 'after' => t('After'), 'invisible' => t('Invisible'), 'attribute' => t('Attribute'));
-  }
-  else {
-    $options = array('before' => t('Before'), 'after' => t('After'), 'invisible' => t('Invisible'));
+    $options['attribute'] = t('Attribute');
   }
 
   $title_display_field = array(
@@ -291,6 +298,16 @@ function form_weight_field() {
   );
 
   return $weight_field;
+}
+
+function form_multiple_field() {
+
+  $multiple_field = array(
+    '#type' => 'checkbox',
+    '#title' => t('Multiple'),
+  );
+
+  return $multiple_field;
 }
 
 function form_description_field() {
