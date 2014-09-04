@@ -109,6 +109,11 @@ function field_fieldset_collapsible_code($boolean) {
   return "'#collapsible' => $boolean,\n";
 }
 
+function field_maxlength_code($value) {
+
+  return "'#maxlength' => $value,\n";
+}
+
 /* Print code for form element resizeable */
 function field_resizable_code($boolean) {
 
@@ -282,7 +287,6 @@ function form_weight_field() {
   $weight_field = array(
     '#type' => 'textfield',
     '#title' => t('Weight'),
-    '#size' => 4,
     '#element_validate' => array('element_validate_integer_positive'),
   );
 
@@ -346,6 +350,16 @@ function form_element_resizable_field() {
   return $element_resizable_field;
 }
 
+function form_element_maxlength_field() {
+
+  $element_name_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum Length'),
+    '#element_validate' => array('element_validate_integer_positive'),
+  );
+
+  return $element_name_field;
+}
 
 function form_element_fieldset_collapsed_field() {
 
