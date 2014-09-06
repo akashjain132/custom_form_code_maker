@@ -95,6 +95,16 @@ function field_allowed_value_code($string) {
   return "'#options' => $string,\n";
 }
 
+/* Print code for form element ajax */
+function field_ajax_code($ajax_callback, $ajax_wrapper, $ajax_method) {
+
+  return "#ajax => array(
+         'callback' => '$ajax_callback',
+         'wrapper' => '$ajax_wrapper',
+         'method' => '$ajax_method',
+         )\n";
+}
+
 /* Print code for form element fieldset collapsed */
 function field_fieldset_collapsed_code($boolean) {
 
@@ -263,6 +273,56 @@ function form_title_display_field($field_type) {
   );
 
   return $title_display_field;
+}
+
+function form_element_ajax_field() {
+
+  $ajax_field = array(
+    '#type' => 'checkbox',
+    '#title' => t('Ajax'),
+    '#attributes' => array('class' => array('ajax-element-field'),'checked' => 'checked'),
+  );
+
+  return $ajax_field;
+}
+
+function form_element_ajax_callback_field() {
+
+  $ajax_callback_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Callback'),
+    '#attributes' => array('class' => array('ajax-callback-field')),
+    '#element_validate' => array('validate_form_function_name'),
+  );
+
+  return $ajax_callback_field;
+}
+
+function form_element_ajax_wrapper_field() {
+
+  $ajax_wrapper_field = array(
+    '#type' => 'textfield',
+    '#title' => t("Wrapper"),
+    '#description' => t('Enter id of div element'),
+    '#attributes' => array('class' => array('ajax-wrapper-field')),
+  );
+
+  return $ajax_wrapper_field;
+}
+
+function form_element_ajax_method_field() {
+
+  $methods = array('replace' => 'replace', 'after' => 'after', 'append' => 'append', 'before' => 'before', 'prepend' => 'prepend');
+
+  $ajax_method_field = array(
+    '#type' => 'radios',
+    '#title' => t("Ajax Method"),
+    '#options' => $methods,
+    '#default_value' => $methods['replace'],
+    '#attributes' => array('class' => array('ajax-method-field')),
+  );
+
+  return $ajax_method_field;
 }
 
 function form_rows_value_field() {

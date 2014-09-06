@@ -10,6 +10,9 @@ function custom_form_code_maker() {
   // Load file which include ajax callback definition.
   module_load_include('inc', 'custom_form_code_maker', 'custom_form_code_maker.support');
 
+  drupal_add_js(drupal_get_path('module', 'custom_form_code_maker') . '/js/custom_form_code_maker.js');
+  // drupal_add_css(drupal_get_path('module', 'custom_form_code_maker') . '/css/custom_form_code_maker.css');
+
   $form = drupal_get_form('get_form_name_and_field');
 
   return $form;
@@ -180,6 +183,12 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
   if (in_array('title_display', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_title_display'] = form_title_display_field($form_element_type);
   }
+  if (in_array('ajax', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_ajax']          = form_element_ajax_field();
+    $form[$fieldset_element_name][$form_element_type . '_element_ajax_callback'] = form_element_ajax_callback_field();
+    $form[$fieldset_element_name][$form_element_type . '_element_ajax_wrapper']  = form_element_ajax_wrapper_field();
+    $form[$fieldset_element_name][$form_element_type . '_element_ajax_method']   = form_element_ajax_method_field();
+  }
   if (in_array('resizable', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_resizable'] = form_element_resizable_field();
   }
@@ -269,6 +278,12 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable($field_info, $form_base_name . '_value') ? field_value_code($field_info[$form_base_name . '_value']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_title_display') ? field_title_display_code($field_info[$form_base_name . '_title_display']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_resizable') ? field_resizable_code($field_info[$form_base_name . '_resizable']) : "";
+  if (check_variable($field_info, $form_base_name . '_ajax')) {
+    $ajax_callback = $field_info[$form_base_name . '_ajax_callback'];
+    $ajax_wrapper  = check_plain($field_info[$form_base_name . '_ajax_wrapper']);
+    $ajax_method   = $field_info[$form_base_name . '_ajax_method'];
+    $custom_code  .= field_ajax_code($ajax_callback, $ajax_wrapper, $ajax_method);
+  }
   $custom_code .= check_variable($field_info, $form_base_name . '_collapsed') ? field_fieldset_collapsed_code($field_info[$form_base_name . '_collapsed']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_collapsible') ? field_fieldset_collapsible_code($field_info[$form_base_name . '_collapsible']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_multiple') ? field_multiple_code($field_info[$form_base_name . '_multiple']) : "";
@@ -289,12 +304,37 @@ function check_variable($array_variable, $variable) {
   return $variable_exit;
 }
 
+function get_form_name_and_field_validate($form, &$form_state) {
+
+  $form_element_type_name = variable_get('form_element_type_name', array());
+  foreach ($form_element_type_name as $key => $value) {
+    $fieldset_name = $key . "_element_fieldset";
+    $form_type_name = str_replace("_element_fieldset", "", $fieldset_name);
+    for ($i = 1; $i <= 10; $i++) {
+      $fieldset_element_name = $fieldset_name . '_' . $i;
+      if (isset($form_state['values'][$fieldset_element_name])) {
+        if ($form_state['values'][$fieldset_element_name][$form_type_name . '_element_ajax'] == 1) {
+          // @TODO apply element in form_set_form.
+          if (empty($form_state['values'][$fieldset_element_name][$form_type_name . '_element_ajax_callback'])) {
+            form_set_error('', "$key ajax Callback can't be empty");
+          }
+          if (empty($form_state['values'][$fieldset_element_name][$form_type_name . '_element_ajax_wrapper'])) {
+            form_set_error('', "$key ajax wrapper can't be empty");
+          }
+        }
+      }
+    }
+  }
+
+}
+
 function show_form_field($field_type) {
 
   $field_name = array(
     'title'            => 'title',
     'size'             => 'size',
     'rows'             => 'rows',
+    'ajax'             => 'ajax',
     'value'            => 'value',
     'weight'           => 'weight',
     'access'           => 'access',
@@ -318,6 +358,7 @@ function show_form_field($field_type) {
       $show_field = array(
         $field_name['size'],
         $field_name['rows'],
+        $field_name['ajax'],
         $field_name['value'],
         $field_name['title'],
         $field_name['weight'],
