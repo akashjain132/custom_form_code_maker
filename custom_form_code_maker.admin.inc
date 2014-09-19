@@ -154,6 +154,15 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
       '#collapsible' => TRUE,
       '#access' => TRUE,
     );
+
+    $form[$fieldset_element_name]['attributes'] = array(
+      '#type' => 'fieldset',
+      '#title' => t(ucfirst('attributes')),
+      '#collapsible' => TRUE,
+      '#collapsed'   => TRUE,
+      '#weight' => 999,
+    );
+
     break;
   }
 
@@ -161,9 +170,6 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
 
   if (in_array('title', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_title'] = form_title_field();
-  }
-  if (in_array('placeholder', $show_field)) {
-    $form[$fieldset_element_name][$form_element_type . '_element_placeholder'] = form_placeholder_field();
   }
   if (in_array('access', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_access']      = form_access_field();
@@ -217,12 +223,16 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
     $form[$fieldset_element_name][$form_element_type . '_element_description'] = form_description_field();
   }
   if (in_array('element_validate', $show_field)) {
-    $form[$fieldset_element_name][$form_element_type . '_element_validate']    = form_element_validate_field();
+    $form[$fieldset_element_name][$form_element_type . '_element_validate'] = form_element_validate_field();
   }
   if (in_array('allowed_value', $show_field)) {
-    $form[$fieldset_element_name][$form_element_type . '_element_allowed_value']    = form_allowed_value_field();
+    $form[$fieldset_element_name][$form_element_type . '_element_allowed_value'] = form_allowed_value_field();
   }
-
+  if (in_array('attributes', $show_field)) {
+    $form[$fieldset_element_name]['attributes'][$form_element_type . '_element_attributes_class'] = form_attributes_class_field();
+    $form[$fieldset_element_name]['attributes'][$form_element_type . '_element_attributes_id'] = form_attributes_id_field();
+    $form[$fieldset_element_name]['attributes'][$form_element_type . '_element_attributes_placeholder'] = form_attributes_placeholder_field();
+  }
 
 }
 
@@ -254,7 +264,7 @@ function generate_form_code($form, $form_state) {
     $form_type_name = str_replace("_element_fieldset", "", $fieldset_name);
     for ($i = 1; $i <= 10; $i++) {
       $fieldset_element_name = $fieldset_name . '_' . $i;
-      if (isset($form_state['values'][$fieldset_element_name])) {
+      if (isset($form_state['values'][$fieldset_element_name]) && isset($form_state['values'][$fieldset_element_name]['attributes'])) {
         $field_info     = $form_state['values'][$fieldset_element_name];
         $form_base_name = str_replace("_fieldset", "", $fieldset_name);
         $custom_code   .= code_maker($field_info, $form_base_name, $form_type_name);
@@ -270,7 +280,6 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable($field_info, $form_base_name . '_name') ? field_frame_start_code($field_info[$form_base_name . '_name']) : "";
   $custom_code .= field_type_code($form_type_name);
   $custom_code .= check_variable($field_info, $form_base_name . '_title') ? field_title_code($field_info[$form_base_name . '_title']) : "";
-  $custom_code .= check_variable($field_info, $form_base_name . '_placeholder') ? field_placeholder_code($field_info[$form_base_name . '_placeholder']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_access') ? field_access_code($field_info[$form_base_name . '_access']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_required') ? field_required_code($field_info[$form_base_name . '_required']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_disabled') ? field_disabled_code($field_info[$form_base_name . '_disabled']) : "";
@@ -278,12 +287,23 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable($field_info, $form_base_name . '_value') ? field_value_code($field_info[$form_base_name . '_value']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_title_display') ? field_title_display_code($field_info[$form_base_name . '_title_display']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_resizable') ? field_resizable_code($field_info[$form_base_name . '_resizable']) : "";
+
   if (check_variable($field_info, $form_base_name . '_ajax')) {
     $ajax_callback = $field_info[$form_base_name . '_ajax_callback'];
     $ajax_wrapper  = check_plain($field_info[$form_base_name . '_ajax_wrapper']);
     $ajax_method   = $field_info[$form_base_name . '_ajax_method'];
     $custom_code  .= field_ajax_code($ajax_callback, $ajax_wrapper, $ajax_method);
   }
+
+  if (check_variable($field_info, 'attributes')) {
+    $class = !empty($field_info['attributes'][$form_base_name . '_attributes_class']) ? $field_info['attributes'][$form_base_name . '_attributes_class'] : NULL;
+    $id    = !empty($field_info['attributes'][$form_base_name . '_attributes_id']) ? $field_info['attributes'][$form_base_name . '_attributes_id'] : NULL;
+    $placeholder = !empty($field_info['attributes'][$form_base_name . '_attributes_placeholder']) ? $field_info['attributes'][$form_base_name . '_attributes_placeholder'] : NULL;
+    if (isset($class) || isset($id) || isset($placeholder)) {
+      $custom_code  .= field_attributes_code($class, $id, $placeholder);
+    }
+  }
+
   $custom_code .= check_variable($field_info, $form_base_name . '_collapsed') ? field_fieldset_collapsed_code($field_info[$form_base_name . '_collapsed']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_collapsible') ? field_fieldset_collapsible_code($field_info[$form_base_name . '_collapsible']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_multiple') ? field_multiple_code($field_info[$form_base_name . '_multiple']) : "";
@@ -312,7 +332,7 @@ function get_form_name_and_field_validate($form, &$form_state) {
     $form_type_name = str_replace("_element_fieldset", "", $fieldset_name);
     for ($i = 1; $i <= 10; $i++) {
       $fieldset_element_name = $fieldset_name . '_' . $i;
-      if (isset($form_state['values'][$fieldset_element_name])) {
+      if (isset($form_state['values'][$fieldset_element_name][$form_type_name . '_element_ajax'])) {
         if ($form_state['values'][$fieldset_element_name][$form_type_name . '_element_ajax'] == 1) {
           // @TODO apply element in form_set_form.
           if (empty($form_state['values'][$fieldset_element_name][$form_type_name . '_element_ajax_callback'])) {
@@ -346,11 +366,11 @@ function show_form_field($field_type) {
     'collapsed'        => 'collapsed',
     'collapsible'      => 'collapsible',
     'description'      => 'description',
-    'placeholder'      => 'placeholder',
     'title_display'    => 'title_display',
     'allowed_value'    => 'allowed_value',
     'default_value'    => 'default_value',
     'element_validate' => 'element_validate',
+    'attributes'       => 'attributes',
   );
 
   switch ($field_type) {
@@ -369,8 +389,8 @@ function show_form_field($field_type) {
         $field_name['maxlength'],
         $field_name['resizable'],
         $field_name['collapsed'],
+        $field_name['attributes'],
         $field_name['collapsible'],
-        $field_name['placeholder'],
         $field_name['description'],
         $field_name['default_value'],
         $field_name['title_display'],
@@ -384,7 +404,6 @@ function show_form_field($field_type) {
         $field_name['access'],
         $field_name['disabled'],
         $field_name['required'],
-        $field_name['placeholder'],
         $field_name['description'],
         $field_name['element_validate'],
         $field_name['allowed_value'],
@@ -397,7 +416,6 @@ function show_form_field($field_type) {
         $field_name['access'],
         $field_name['disabled'],
         $field_name['required'],
-        $field_name['placeholder'],
         $field_name['description'],
         $field_name['element_validate'],
       );

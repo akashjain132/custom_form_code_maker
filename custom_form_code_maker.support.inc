@@ -95,6 +95,24 @@ function field_allowed_value_code($string) {
   return "'#options' => $string,\n";
 }
 
+function field_attributes_code($class, $id, $placeholder) {
+
+  $attributes = "array(";
+  if (isset($class)) {
+    $attributes .= "'class' => array(\"$class\"), ";
+  }
+  if (isset($id)) {
+    $attributes .= "'id' => \"$id\", ";
+  }
+  if (isset($placeholder)) {
+    $attributes .= "'placeholder' => t(\"$placeholder\"), ";
+  }
+  $attributes = rtrim($attributes, ', ');
+  $attributes .= ")";
+
+  return "'#attributes' => $attributes,\n";
+}
+
 /* Print code for form element ajax */
 function field_ajax_code($ajax_callback, $ajax_wrapper, $ajax_method) {
 
@@ -193,16 +211,6 @@ function form_title_field() {
   $title_field = array(
     '#type' => 'textfield',
     '#title' => t('Title'),
-  );
-
-  return $title_field;
-}
-
-function form_placeholder_field() {
-
-  $title_field = array(
-    '#type' => 'textfield',
-    '#title' => t('Placeholder'),
   );
 
   return $title_field;
@@ -456,6 +464,37 @@ function form_element_fieldset_collapsible_field() {
   );
 
   return $element_fieldset_collapsible_field;
+}
+
+function form_attributes_class_field() {
+
+  $element_attributes_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Class'),
+    '#description' => t('Enter class name with spaces.'),
+  );
+
+  return $element_attributes_field;
+}
+
+function form_attributes_id_field() {
+
+  $element_attributes_field = array(
+    '#type' => 'textfield',
+    '#title' => t('ID'),
+  );
+
+  return $element_attributes_field;
+}
+
+function form_attributes_placeholder_field() {
+
+  $title_field = array(
+    '#type' => 'textfield',
+    '#title' => t('Placeholder'),
+  );
+
+  return $title_field;
 }
 
 /* Print code for function name */
