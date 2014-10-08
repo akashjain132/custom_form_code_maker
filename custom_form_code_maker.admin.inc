@@ -245,7 +245,7 @@ function get_form_name_and_field_submit($form, &$form_state) {
 	$custom_form_code .= function_name($form_function_name, $param);
   $custom_form_code .= generate_form_code($form, $form_state);
 	$custom_form_code .= function_closing_braces();
-  dpm($custom_form_code);
+  download_code_file($custom_form_code);
 }
 
 function element_validate_function_code($element_validate_function_name) {
@@ -253,6 +253,19 @@ function element_validate_function_code($element_validate_function_name) {
   $function_frame  = function_name($element_validate_function_name, $param);
   $function_frame .= function_closing_braces();
   return $function_frame;
+}
+
+function download_code_file($custom_form_code) {
+  $filename = 'public://custom_form_code.txt';
+  $file_handler = fopen($filename, 'w');
+  fwrite($file_handler, $custom_form_code);
+  fclose($file_handler);
+
+  $http_header = array('Content-Type' => 'application/text',
+      'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+      'Content-Length' => filesize($filename));
+
+  file_transfer($filename, $http_header);
 }
 
 function generate_form_code($form, $form_state) {
