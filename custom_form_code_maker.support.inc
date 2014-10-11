@@ -482,10 +482,38 @@ function form_attributes_id_field() {
   $element_attributes_field = array(
     '#type' => 'textfield',
     '#title' => t('ID'),
+    '#element_validate' => array('no_space_string_element_validation'),
   );
 
   return $element_attributes_field;
 }
+
+function no_space_string_element_validation($element, &$form_state) {
+  if (isset($element['#value']) && !empty($element['#value'])) {
+    $form_tag_id = trim($element['#value']);
+    if (no_space_string($form_tag_id)) {
+      form_set_error('', t("HTML atrribute ID must not have any space."));
+    }
+  }
+}
+
+/**
+ * check string have space or not.
+ *
+ * @param  String $string
+ *
+ * @return boolean
+ */
+function no_space_string($string = NULL) {
+  if (isset($string) && !empty($string)) {
+    if (count(explode(' ', $string)) > 1) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
 
 function form_attributes_placeholder_field() {
 

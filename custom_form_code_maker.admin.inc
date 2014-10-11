@@ -431,6 +431,7 @@ function show_form_field($field_type) {
         $field_name['required'],
         $field_name['description'],
         $field_name['element_validate'],
+        $field_name['attributes'],
       );
       break;
 
