@@ -389,8 +389,40 @@ function show_form_field($field_type) {
   switch ($field_type) {
     case 'checkbox':
       $show_field = array(
+        $field_name['ajax'],
+        $field_name['title'],
+        $field_name['weight'],
+        $field_name['access'],
+        $field_name['disabled'],
+        $field_name['required'],
+        $field_name['attributes'],
+        $field_name['description'],
+        $field_name['title_display'],
+        $field_name['element_validate'],
+        $field_name['default_value'],
+      );
+      break;
+
+    case 'select':
+      $show_field = array(
+        $field_name['ajax'],
+        $field_name['weight'],
+        $field_name['access'],
+        $field_name['disabled'],
+        $field_name['title'],
+        $field_name['default_value'],
+        $field_name['title_display'],
+        $field_name['element_validate'],
+        $field_name['allowed_value'],
+        $field_name['description'],
+        $field_name['attributes'],
+        $field_name['required'],
         $field_name['size'],
-        $field_name['rows'],
+      );
+      break;
+
+    case 'textfield':
+      $show_field = array(
         $field_name['ajax'],
         $field_name['value'],
         $field_name['title'],
@@ -398,12 +430,8 @@ function show_form_field($field_type) {
         $field_name['access'],
         $field_name['disabled'],
         $field_name['required'],
-        $field_name['multiple'],
         $field_name['maxlength'],
-        $field_name['resizable'],
-        $field_name['collapsed'],
         $field_name['attributes'],
-        $field_name['collapsible'],
         $field_name['description'],
         $field_name['default_value'],
         $field_name['title_display'],
@@ -411,32 +439,166 @@ function show_form_field($field_type) {
       );
       break;
 
-    case 'select':
+    case 'textarea':
       $show_field = array(
+        $field_name['ajax'],
         $field_name['title'],
+        $field_name['title_display'],
+        $field_name['weight'],
         $field_name['access'],
         $field_name['disabled'],
-        $field_name['required'],
-        $field_name['description'],
+        $field_name['default_value'],
         $field_name['element_validate'],
-        $field_name['allowed_value'],
+        $field_name['description'],
+        $field_name['required'],
+        $field_name['attributes'],
+        $field_name['resizable'],
+        $field_name['rows'],
       );
       break;
 
-    case 'textfield':
+    case 'radio':
       $show_field = array(
-        $field_name['title'],
+        $field_name['ajax'],
         $field_name['access'],
+        $field_name['attributes'],
+        $field_name['default_value'],
+        $field_name['disabled'],
+        $field_name['description'],
+        $field_name['element_validate'],
+        $field_name['required'],
+        $field_name['title_display'],
+        $field_name['title'],
+        $field_name['weight'],
+      );
+      break;
+
+    case 'radios':
+      $show_field = array(
+        $field_name['ajax'],
+        $field_name['access'],
+        $field_name['attributes'],
+        $field_name['default_value'],
+        $field_name['disabled'],
+        $field_name['description'],
+        $field_name['element_validate'],
+        $field_name['allowed_value'],
+        $field_name['required'],
+        $field_name['title_display'],
+        $field_name['title'],
+        $field_name['weight'],
+      );
+      break;
+
+    case 'checkboxes':
+      $show_field = array(
+        $field_name['access'],
+        $field_name['ajax'],
+        $field_name['title'],
+        $field_name['weight'],
         $field_name['disabled'],
         $field_name['required'],
+        $field_name['attributes'],
+        $field_name['title_display'],
+        $field_name['element_validate'],
         $field_name['description'],
+        $field_name['default_value'],
+      );
+      break;
+
+    case 'date':
+      $show_field = array(
+        $field_name['access'],
+        $field_name['attributes'],
+        $field_name['default_value'],
+        $field_name['description'],
+        $field_name['element_validate'],
+        $field_name['disabled'],
+        $field_name['required'],
+        $field_name['title'],
+        $field_name['title_display'],
+        $field_name['weight'],
+      );
+      break;
+
+    case 'fieldset':
+      $show_field = array(
+        $field_name['access'],
+        $field_name['attributes'],
+        $field_name['collapsed'],
+        $field_name['collapsible'],
+        $field_name['description'],
+        $field_name['element_validate'],
+        $field_name['title_display'],
+        $field_name['title'],
+        $field_name['weight'],
+      );
+      break;
+
+    case 'managed_file':
+      $show_field = array(
+        $field_name['access'],
+        $field_name['value'],
+        $field_name['attributes'],
+        $field_name['disabled'],
+        $field_name['description'],
+        $field_name['element_validate'],
+        $field_name['title'],
+        $field_name['title_display'],
+        $field_name['weight'],
+      );
+      break;
+
+    case 'button':
+      $show_field = array(
+        $field_name['ajax'],
+        $field_name['value'],
+        $field_name['weight'],
+        $field_name['access'],
+        $field_name['disabled'],
+        $field_name['attributes'],
+        $field_name['element_validate'],
+      );
+      break;
+
+    case 'container':
+      $show_field = array(
+        $field_name['attributes'],
+        $field_name['weight'],
+        $field_name['access'],
+      );
+      break;
+
+    case 'submit':
+      $show_field = array(
+        $field_name['value'],
+        $field_name['access'],
+        $field_name['disabled'],
+        $field_name['ajax'],
+        $field_name['description'],
+        $field_name['element_validate'],
+        $field_name['attributes'],
+      );
+        break;
+
+    case 'hidden':
+      $show_field = array(
+        $field_name['default_value'],
+        $field_name['access'],
+        $field_name['element_validate'],
+      );
+      break;
+
+    case 'markup':
+      $show_field = array(
+        $field_name['access'],
         $field_name['element_validate'],
         $field_name['attributes'],
       );
       break;
 
     default:
-      $show_field = $field_name;
+      form_set_error('', 'Illegal choice of form element.');
       break;
   }
 
