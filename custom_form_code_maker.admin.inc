@@ -213,6 +213,9 @@ function create_checkbox_form(&$form, &$form_state, $form_element_type, $show_fi
   if (in_array('rows', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_rows'] = form_rows_value_field();
   }
+  if (in_array('markup', $show_field)) {
+    $form[$fieldset_element_name][$form_element_type . '_element_markup'] = form_element_markup_field();
+  }
   if (in_array('maxlength', $show_field)) {
     $form[$fieldset_element_name][$form_element_type . '_element_maxlength'] = form_element_maxlength_field();
   }
@@ -300,6 +303,7 @@ function code_maker($field_info, $form_base_name, $form_type_name) {
   $custom_code .= check_variable($field_info, $form_base_name . '_value') ? field_value_code($field_info[$form_base_name . '_value']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_title_display') ? field_title_display_code($field_info[$form_base_name . '_title_display']) : "";
   $custom_code .= check_variable($field_info, $form_base_name . '_resizable') ? field_resizable_code($field_info[$form_base_name . '_resizable']) : "";
+  $custom_code .= check_variable($field_info, $form_base_name . '_markup') ? field_markup_code($field_info[$form_base_name . '_markup']) : "";
 
   if (check_variable($field_info, $form_base_name . '_ajax')) {
     $ajax_callback = $field_info[$form_base_name . '_ajax_callback'];
@@ -374,6 +378,7 @@ function show_form_field($field_type) {
     'disabled'         => 'disabled',
     'required'         => 'required',
     'resizable'        => 'resizable',
+    'markup'           => 'markup',
     'maxlength'        => 'maxlength',
     'multiple'         => 'multiple',
     'collapsed'        => 'collapsed',
@@ -592,6 +597,7 @@ function show_form_field($field_type) {
     case 'markup':
       $show_field = array(
         $field_name['access'],
+        $field_name['markup'],
         $field_name['element_validate'],
         $field_name['attributes'],
       );

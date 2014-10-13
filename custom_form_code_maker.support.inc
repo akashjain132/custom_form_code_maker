@@ -166,10 +166,21 @@ function array_to_string($list, $string = '') {
   return $string;
 }
 
-/* Print code for form element discription */
+/* Print code for form element description */
 function field_description_code($description) {
 
   return "'#description' => t('$description'),\n";
+}
+
+/* Print code for form element markup */
+function field_markup_code($html_string) {
+  global $user;
+
+  if (in_array('administrator', $user->roles)) {
+    return "'#markup' => filter_xss_admin($html_string),\n";
+  }
+
+  return "'#markup' => filter_xss($html_string),\n";
 }
 
 /* Print code for form element validate function */
@@ -433,6 +444,17 @@ function form_element_resizable_field() {
   );
 
   return $element_resizable_field;
+}
+
+function form_element_markup_field() {
+
+  $element_markup_field = array(
+    '#type' => 'textarea',
+    '#title' => t('Markup'),
+    '#description' => t('Enter valid markup string.'),
+  );
+
+  return $element_markup_field;
 }
 
 function form_element_maxlength_field() {
